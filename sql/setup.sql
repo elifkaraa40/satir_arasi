@@ -1,1 +1,1 @@
---veritabanı dosyalarını oluşturan kodlar
+-- veritabanı dosyalarını oluşturan kodlar
