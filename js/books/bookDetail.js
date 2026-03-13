@@ -1,0 +1,1 @@
+//kitap detaylarını çekme

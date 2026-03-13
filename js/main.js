@@ -1,1 +1,0 @@
-//ortak fonksiyonlar

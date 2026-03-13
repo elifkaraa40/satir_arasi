@@ -1,1 +1,0 @@
--- veritabanı dosyalarını oluşturan kodlar
