@@ -1,1 +1,51 @@
-<!--giris-->
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satır Arası - Giriş Yap</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body class="auth-page">
+
+    <nav class="main-nav">
+        <div class="nav-left">
+            <a href="index.html" class="nav-logo">Satır Arası</a>
+            <div class="nav-links">
+                <a href="index.html"><i class="fa-solid fa-house"></i> Ana Sayfa</a>
+                <a href="library.html"><i class="fa-solid fa-book"></i> Kitaplığım</a>
+            </div>
+        </div>
+        <div class="nav-right">
+            <a href="login.html" class="btn-login-nav" id="navLoginBtn">Giriş Yap</a>
+            <div class="user-profile" id="navUserProfile" style="display:none;">
+                <img id="headerAvatar" src="" alt="Profil">
+                <span id="headerUsername"></span>
+                <i class="fa-solid fa-arrow-right-from-bracket logout-icon" id="logoutBtn" title="Çıkış Yap"></i>
+            </div>
+        </div>
+    </nav>
+
+    <div class="glass-container">
+        <h1 class="brand-title">Satır Arası</h1>
+        <h4 class="subtitle">Dijital kitaplığınıza giriş yapın.</h4>
+
+        <form id="loginForm">
+            <div class="input-group"><i class="fa-regular fa-envelope"></i><input type="email" id="loginEmail"
+                    placeholder="E-posta" required></div>
+            <div class="input-group"><i class="fa-solid fa-key"></i><input type="password" id="loginPass"
+                    placeholder="Şifre" required><i class="fa-regular fa-eye-slash toggle-pass"></i></div>
+            <button type="submit" class="btn-primary"><span id="loginText">Giriş Yap</span></button>
+        </form>
+
+        <p class="auth-footer">Hesabınız yok mu?<a href="register.html">Kayıt Ol</a></p>
+    </div>
+
+    <script type="module" src="js/auth/auth.js"></script>
+</body>
+
+</html>
