@@ -1,0 +1,187 @@
+/* 1. Sayfa Yapısı ve Arka Plan */
+body {
+    min-height: 100vh;
+    overflow-y: auto;
+    background-color: #f4f7f6;
+}
+
+body.auth-page {
+    background: url('../img/login-bg.jpeg') no-repeat center center fixed !important;
+    background-size: cover !important;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 2. Bölümler (Sections) */
+.section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 100px 10%;
+    text-align: center;
+}
+
+/* 3. Cam Efektli Kartlar ve Paneller */
+.glass-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 25px;
+    padding: 35px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    margin: 15px;
+}
+
+.glass-panel {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 30px;
+    padding: 50px;
+    width: 90%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* 4. Başlıklar ve Fontlar */
+.section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    margin-bottom: 50px;
+    text-shadow: 2px 4px 10px rgba(0,0,0,0.5);
+}
+
+.serif-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+}
+
+/* 5. Grid ve Hizalamalar */
+.feature-grid, .stat-highlights, .book-row, .steps-vertical {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    width: 100%;
+}
+
+.feature-box, .stat-item, .step-item {
+    flex: 1;
+    min-width: 280px;
+    max-width: 450px;
+}
+
+.feature-box i {
+    font-size: 2.5rem;
+    color: #8fb3b8;
+    margin-bottom: 20px;
+}
+
+/* 6. Arama Çubuğu (Hero Search) */
+.hero-search-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-search {
+    display: flex;
+    background: white;
+    border-radius: 50px;
+    padding: 5px;
+    width: 100%;
+    max-width: 500px;
+    margin-top: 30px;
+}
+
+.hero-search input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-size: 1rem;
+}
+
+.btn-search {
+    background: #4a6b6f;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 50px;
+    cursor: pointer;
+}
+
+/* 7. Kitap Görselleri */
+.book-img img {
+    width: 180px;
+    height: 270px;
+    object-fit: cover;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+}
+
+/* 8. Call to Action (CTA) ve Aesthetic Butonlar */
+.final-cta {
+    margin-top: 50px;
+    padding-bottom: 20px;
+}
+
+.cta-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 20px;
+}
+
+.btn-aesthetic {
+    background-color: #4a6b6f; 
+    color: white !important;
+    padding: 12px 35px;
+    min-width: 180px;
+    max-width: 250px;
+    border-radius: 50px; 
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    margin: 10px auto;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    letter-spacing: 0.5px;
+}
+
+.btn-aesthetic:hover {
+    background-color: #3a5659;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* 9. Mobil Uyumluluk (Index Özel) */
+@media (max-width: 768px) {
+    .serif-title { font-size: 2.2rem; }
+    .section { padding: 60px 20px; }
+    
+    .hero-search {
+        flex-direction: column;
+        background: transparent;
+        box-shadow: none;
+    }
+    
+    .hero-search input {
+        padding: 15px;
+        margin-bottom: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+}
