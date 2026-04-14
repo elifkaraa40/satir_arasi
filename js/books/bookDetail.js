@@ -5,14 +5,24 @@ import { db, auth } from "../firebase/firebaseConfig.js";
 // --- EKRAN KONTROLÜ İÇİN GEREKLİ ALANLAR ---
 const authRequiredStatus = document.getElementById('authRequiredStatus');
 const reviewSection = document.getElementById('reviewSection');
+const homeLink = document.getElementById('homeLink');
+const logoLink = document.getElementById('logoLink');
 
 // --- KULLANICI OTURUM KONTROLÜ ---
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        // Kullanıcı varsa detay özelliklerini başlat
+        // GİRİŞ YAPILMIŞ: Linkleri Dashboard'a yönlendir
+        if (homeLink) homeLink.href = "dashboard.html";
+        if (logoLink) logoLink.href = "dashboard.html";
+
+        // Detay özelliklerini başlat
         initializeInteractiveFeatures();
     } else {
-        // Kullanıcı yoksa detay kısımlarını kilitle
+        // GİRİŞ YAPILMAMIŞ: Linkleri Index'e yönlendir (Varsayılan)
+        if (homeLink) homeLink.href = "index.html";
+        if (logoLink) logoLink.href = "index.html";
+
+        // Detay kısımlarını kilitle
         if (authRequiredStatus) {
             authRequiredStatus.style.display = 'none';
         }
