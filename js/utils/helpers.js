@@ -1,1 +1,1 @@
-//yardımcı fonksiyonlar
+//yardımcı fonksiyonlar  

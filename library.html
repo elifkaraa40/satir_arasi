@@ -1,1 +1,37 @@
-<!--kitaplar(public - giriş yapmadan da görülecek)-->
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satır Arası - Kitap Keşfet</title>
+    <link rel="stylesheet" href="css/style.css"> 
+    <link rel="stylesheet" href="css/library.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="library-page">
+
+    <div class="container main-content">
+        <header class="search-section">
+            <h1 class="glass-text">Yeni Dünyalar Keşfet</h1>
+            <p>Binlerce kitap arasından dilediğini bul ve kitaplığına ekle.</p>
+            
+            <div class="search-bar-container">
+                <div class="search-bar glass-effect">
+                    <input type="text" id="searchInput" placeholder="Kitap adı, yazar veya ISBN girin...">
+                    <button id="searchBtn" class="btn-primary">
+                        <i class="fas fa-search"></i> Ara
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div id="books-container" class="books-grid">
+            <div class="initial-message">
+                <p>Arama yapmak için yukarıdaki kutucuğu kullanın...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/library/library.js"></script>
+</body>
+</html>

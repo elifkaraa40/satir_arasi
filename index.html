@@ -43,8 +43,8 @@
 
                 <div class="hero-search-container">
                     <div class="hero-search">
-                        <input type="text" placeholder="Kitap veya yazar ara...">
-                        <button class="btn-search">Ara</button>
+                        <input type="text" id="mainSearchInput" placeholder="Kitap veya yazar ara...">
+                        <button class="btn-search" id="mainSearchBtn">Ara</button>
                     </div>
                 </div>
             </div>
@@ -180,6 +180,30 @@
     </footer>
     <script type="module" src="js/auth/auth.js"></script>
 
+ 
+   <script>
+    const searchBtn = document.getElementById('mainSearchBtn');
+    const searchInput = document.getElementById('mainSearchInput');
+
+    if(searchBtn && searchInput) {
+        searchBtn.addEventListener('click', () => {
+            const query = searchInput.value.trim();
+            if (query !== "") {
+                // library.html sayfasına yönlendiriyoruz
+                window.location.href = `library.html?search=${encodeURIComponent(query)}`;
+            } else {
+                alert("Lütfen bir kitap adı girin.");
+            }
+        });
+
+        // Enter tuşu desteği
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchBtn.click();
+            }
+        });
+    }
+</script>
 </body>
 
 </html>

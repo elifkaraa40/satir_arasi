@@ -1,0 +1,192 @@
+/* Sayfa Genel Ayarları ve Arka Plan */
+body.library-page {
+    /* Görselin yolu: css klasöründen çıkıp img klasörüne gider */
+    background-image: url('../img/kutuphane-bg.png'); 
+    
+    
+    /* Görseli ekrana tam sığdırır */
+    background-size: cover; 
+    
+    /* Sayfa kaydırılsa bile arka plan sabit kalır */
+    background-attachment: fixed; 
+    
+    /* Görseli merkezler */
+    background-position: center;
+    
+    /* Tekrar etmesini engeller */
+    background-repeat: no-repeat;
+    
+    /* Kenar boşluklarını sıfırlar */
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+}
+
+/* Kitap Izgarası (Grid) Yapısı */
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 30px;
+    padding: 40px 20px;
+    /* İçeriklerin arkadaki bitkilerin üzerinde daha rahat okunması için hafif karartma */
+    background: rgba(255, 255, 255, 0.1); 
+    min-height: 100vh;
+}
+
+/* Kitap Kartları (Cam Efekti) */
+.book-card {
+    /* Beyaz şeffaf arka plan */
+    background: rgba(255, 255, 255, 0.15); 
+    /* Arkadaki görseli bulanıklaştırarak derinlik katar */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px); 
+    
+    /* İnce zarif çerçeve */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    
+    /* Hafif gölge */
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+}
+
+/* Kartın Üzerine Gelindiğinde (Hover) */
+.book-card:hover {
+    transform: translateY(-8px);
+    background: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.15);
+}
+
+/* Kart İçindeki Resimler */
+.book-card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Yazı Renkleri */
+.book-card h3 {
+    font-size: 1.2rem;
+    color: #1a2f1c; /* Koyu yeşil tonu, tema ile uyumlu */
+    margin-bottom: 5px;
+}
+/*yazarlar*/
+.book-card p { 
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Sadece 3 satır gösterir */
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+    text-overflow: ellipsis; /* Taşan yere üç nokta (...) koyar */
+    max-height: 4.5em; 
+    line-height: 1.5em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 10px;
+    
+}
+/* Üzerine gelince bir ipucu varmış gibi hissettirelim */
+.book-card p:hover {
+    color: #5d8a66;
+}
+
+/* Buton Tasarımı */
+.book-card button {
+    background: #5d8a66; /* Bitki yeşili tonu */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.book-card button:hover {
+    background: #4a6e52;
+    transform: scale(1.05);
+}
+/*yeni dünyalar keşfet*/
+.glass-text {
+    font-size: 2rem; /* Yazıyı büyütür */
+    font-weight: 800; /* Daha kalın ve belirgin yapar */
+    color: #4a6e52; /* Temandaki koyu yeşil tonu */
+    text-transform: uppercase; /* Tüm harfleri büyük yapar */
+    letter-spacing: 2px; /* Harf arası boşluk bırakarak ferahlatır */
+    margin-bottom: 10px;
+    
+    /* Hafif bir gölge ile derinlik katıp okunabilirliği artırır */
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
+}
+.search-section p {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #0b1d10;
+    font-style: italic; /* Eğik yazı daha "edebi" bir hava katar */
+    opacity: 0.9;
+}
+
+/* Arama çubuğunun genel kapsayıcısı */
+.search-bar {
+    display: flex;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.2); /* Daha belirgin beyaz şeffaflık */
+    backdrop-filter: blur(10px);
+    padding: 10px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    width: 100%;
+    max-width: 600px; /* Genişliği artırdık */
+}
+
+/* Yazı yazılan alan */
+#searchInput {
+    flex: 1;
+    padding: 15px 20px; /* İç boşluğu artırarak alanı büyüttük */
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    outline: none;
+}
+
+/* Ara butonu */
+#searchBtn {
+    padding: 0 30px; /* Butonu yanlardan genişlettik */
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    background-color: #5d8a66; /* Tema renginle uyumlu yeşil */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#searchBtn:hover {
+    background-color: #4a6e52;
+    transform: scale(1.05); /* Üzerine gelince hafifçe büyüsün */
+}
+.search-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Her şeyi yatayda ortalar */
+    justify-content: center;
+    text-align: center;
+    padding: 60px 20px; /* Yukarıdan ve aşağıdan boşluk bırakır */
+}
+
+.search-bar-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
