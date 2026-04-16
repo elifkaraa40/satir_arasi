@@ -1,20 +1,53 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Satır Arası - Kitap Keşfet</title>
-    <link rel="stylesheet" href="css/style.css"> 
+    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/library.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body class="library-page">
+
+    <nav class="main-nav">
+        <div class="nav-left">
+            <a href="index.html" class="nav-logo" id="navLogo">Satır Arası</a>
+            <div class="nav-links">
+                <a href="index.html" id="navHomeLink"><i class="fa-solid fa-house"></i> Ana Sayfa</a>
+                <a href="library.html" id="navBooksLink"><i class="fa-solid fa-book"></i> Kitaplar</a>
+                <a href="stats.html" id="navStatsLink"><i class="fas fa-chart-line"></i> İstatistiklerim</a>
+                <a href="contact.html" id="navContactLink"><i class="fas fa-envelope"></i> Bize Ulaşın</a>
+            </div>
+        </div>
+        <div class="nav-right">
+            <a href="login.html" class="btn-login-nav" id="navLoginBtn">Giriş Yap</a>
+
+            <div class="user-profile-dropdown" id="navUserProfile" style="display:none;">
+                <div class="profile-trigger">
+                    <img id="headerAvatar" src="img/default-avatar-icon.jpg" alt="Profil">
+                    <span id="headerUsername">Kullanıcı</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+
+                <div class="dropdown-menu">
+                    <a href="my-library.html"><i class="fa-solid fa-book"></i> Kitaplığım</a>
+                    <a href="profile.html"><i class="fa-solid fa-user-gear"></i> Profil Ayarları</a>
+                    <hr class="dropdown-divider">
+                    <a href="#" id="logoutBtn" class="logout-link"><i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        Çıkış Yap</a>
+                </div>
+            </div>
+        </div>
+    </nav>
 
     <div class="container main-content">
         <header class="search-section">
             <h1 class="glass-text">Yeni Dünyalar Keşfet</h1>
             <p>Binlerce kitap arasından dilediğini bul ve kitaplığına ekle.</p>
-            
+
             <div class="search-bar-container">
                 <div class="search-bar glass-effect">
                     <input type="text" id="searchInput" placeholder="Kitap adı, yazar veya ISBN girin...">
@@ -32,6 +65,40 @@
         </div>
     </div>
 
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-section about">
+                <h2 class="footer-logo">Satır Arası</h2>
+                <p>"Her satır arası yeni bir dünya."</p>
+                <div class="social-links">
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-github"></i></a>
+                    <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-section links">
+                <h3>Hızlı Menü</h3>
+                <ul>
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="library.html">Kitaplar</a></li>
+                    <li><a href="contact.html">Bize Ulaşın</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section contact">
+                <h3>İletişim</h3>
+                <p><i class="fa-solid fa-envelope"></i> destek@satirarasi.com</p>
+                <p><i class="fa-solid fa-location-dot"></i> Mars</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 Satır Arası | Tüm Hakları Saklıdır.
+        </div>
+    </footer>
+
     <script src="js/library/library.js"></script>
+    <script type="module" src="js/auth/auth.js"></script>
 </body>
+
 </html>
