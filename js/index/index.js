@@ -66,25 +66,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderPopularBooks(books) {
-        // Kitapları yan yana basıyoruz
         popularBooksContainer.innerHTML = books.map(item => {
             const info = item.volumeInfo;
+            const bookId = item.id; // Google Books'un verdiği benzersiz ID
+
             const thumbnail = info.imageLinks?.thumbnail
                 ? info.imageLinks.thumbnail.replace('http:', 'https:').replace('&zoom=1', '&zoom=2')
                 : 'https://via.placeholder.com/180x270';
+
             const safeTitle = info.title.length > 35 ? info.title.substring(0, 35) + '...' : info.title;
 
+            // Yönlendirmeyi book-detail.html sayfasına ve id parametresine çevirdik
             return `
-                <div class="book-card" onclick="window.location.href='library.html?search=${encodeURIComponent(info.title)}'" style="cursor: pointer;">
-                    <div class="book-img">
-                        <img src="${thumbnail}" alt="${safeTitle}">
-                    </div>
-                    <h4 style="color:white; margin-top:15px; font-size:1rem; max-width:180px;">${safeTitle}</h4>
+            <div class="book-card" onclick="window.location.href='book-detail.html?id=${bookId}'" style="cursor: pointer;">
+                <div class="book-img">
+                    <img src="${thumbnail}" alt="${safeTitle}">
                 </div>
-            `;
+                <h4 style="color:white; margin-top:15px; font-size:1rem; max-width:180px;">${safeTitle}</h4>
+            </div>
+        `;
         }).join('');
     }
-
     // --- 3. ARAMA MANTIĞI ---
     const mainSearchBtn = document.getElementById('mainSearchBtn');
     const mainSearchInput = document.getElementById('mainSearchInput');

@@ -119,43 +119,51 @@ body.auth-page {
     cursor: pointer;
 }
 
-/* Kitapların dizildiği satır */
+/* Her bir kitap kartı */
 .book-row {
     display: flex;
-    justify-content: center; /* Kitapları ortalar */
+    justify-content: center;
     align-items: flex-start;
-    gap: 40px; /* Kitaplar arasındaki boşluk */
+    gap: 30px;
     width: 100%;
-    flex-wrap: nowrap; /* Yan yana kalmalarını sağlar */
+    flex-wrap: wrap; /* Mobilde alt alta geçmesi için nowrap yerine wrap daha güvenlidir */
     margin-top: 30px;
 }
 
-/* Her bir kitap kartı */
+/* Kart boyutunu sabitleyerek panelin büyümesini engelleyelim */
 .book-card {
-    flex: 0 1 200px; /* Kartların büyümesini engeller, sabit genişlik sunar */
+    flex: 0 0 180px; /* Genişlik 180px'de sabit kalır, büyümez */
+    width: 180px;
+    max-width: 180px;
     transition: transform 0.3s ease;
+    text-align: center;
 }
 
-.book-card:hover {
-    transform: translateY(-10px);
+.book-img {
+    width: 180px;
+    height: 270px;
+    overflow: hidden; /* Görsel dışarı taşarsa keser */
+    border-radius: 15px;
 }
 
 .book-img img {
-    width: 180px; /* Görsel genişliği */
-    height: 270px;
-    object-fit: cover;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Görseli kutuya sığdırır */
 }
 
+/* Başlıkların alt alta kayıp yüksekliği bozmasını engelleyelim */
 .book-card h4 {
     color: white;
-    margin-top: 15px;
-    font-size: 1.1rem;
-    font-family: 'Poppins', sans-serif;
-    max-width: 180px;
-    line-height: 1.4;
+    margin-top: 12px;
+    font-size: 0.95rem;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* En fazla 2 satır göster */
+    -webkit-box-orient: vertical;
+    line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* 8. Call to Action (CTA) ve Aesthetic Butonlar */

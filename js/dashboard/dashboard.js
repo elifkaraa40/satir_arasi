@@ -1,6 +1,6 @@
 import { auth, db } from '../firebase/firebaseConfig.js';
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+import { doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- ELEMENT SEÇİCİLER ---
@@ -20,21 +20,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (userSnap.exists()) {
                     const data = userSnap.data();
-                    const userName = data.username; // Firestore'daki alan adı 'username' olmalı
 
-                    if (headerUsername) headerUsername.innerText = userName;
+                    // 1. Hedef Bilgisini Al (Firebase'den geliyor)
+                    const hedef = data.readingGoal || 0;
 
-                    const welcomeSpan = document.querySelector('.user-name-span');
-                    if (welcomeSpan) {
-                        welcomeSpan.innerText = userName;
-                    }
+                    // 2. Okunan Kitap Sayısını Canlı Say (Koleksiyondan sayıyoruz)
+                    // "Okuduklarım" etiketine sahip kaç kitap varsa hepsini getirir
+                    const libraryRef = collection(db, "users", user.uid, "library");
+                    const qRead = query(libraryRef, where("status", "==", "Okuduklarım"));
+                    const readSnap = await getDocs(qRead);
+                    const okunan = readSnap.size; // Filtrelenmiş kitap sayısı
 
-                    if (headerAvatar) {
-                        headerAvatar.src = data.photoURL || 'assets/img/default-avatar.png';
-                    }
+                    // 3. Arayüzü ve Çemberi Güncelle
+                    updateReadingGoal(okunan, hedef);
+
+                    // Diğer fonksiyonlar
+                    fetchCurrentBooks(user.uid);
+                    // Hoş geldin mesajı vs...
+                    if (welcomeNameSpan) welcomeNameSpan.innerText = data.username || "Okur";
                 }
             } catch (e) {
-                console.error("İsim yüklenirken hata:", e);
+                console.error("Dashboard veri hatası:", e);
             }
         } else {
             window.location.href = 'login.html';
@@ -70,24 +76,53 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Firebase'den Okunan Kitapları Getir
     async function fetchCurrentBooks(userId) {
         const container = document.getElementById('current-books-container');
-        // Burada Firebase koleksiyon yapınıza göre (örn: 'userBooks') çekim yapılır
-        // Şimdilik arkadaşının API yapısına uygun bir render hazırlayalım:
+        if (!container) return;
 
-        /* Örnek veri yapısı geldiğinde çalışacak fonksiyon */
-        window.renderCurrentBooks = (books) => {
-            container.innerHTML = books.map(book => `
+        try {
+            // bookDetail.js'deki yapıya uygun olarak 'library' koleksiyonuna bakıyoruz
+            // Ve durumun "Okunuyor" (Türkçe) olduğunu kontrol ediyoruz
+            const q = query(
+                collection(db, "users", userId, "library"),
+                where("status", "==", "Okunuyor")
+            );
+
+            const querySnapshot = await getDocs(q);
+
+            if (querySnapshot.empty) {
+                container.innerHTML = `
+                <div style="text-align:center; padding:20px; color:#666;">
+                    <p>Şu an aktif bir okumanız bulunmuyor.</p>
+                    <a href="library.html" style="color:#4a6b6f; font-size:0.9rem;">Kitap eklemek için tıkla</a>
+                </div>`;
+                return;
+            }
+
+            const books = [];
+            querySnapshot.forEach((doc) => {
+                books.push({ id: doc.id, ...doc.data() });
+            });
+
+            container.innerHTML = books.map(book => {
+                // İlerleme yüzdesini hesapla (Eğer bookDetail'de progress yoksa manuel hesaplıyoruz)
+                const progress = book.progress || Math.round(((book.currentPage || 0) / (book.totalPages || 1)) * 100);
+
+                return `
             <div class="book-item" onclick="window.location.href='book-detail.html?id=${book.id}'" style="cursor: pointer;">
-                <img src="${book.cover}" alt="${book.title}">
+                <img src="${book.cover || 'img/default-book.jpg'}" alt="${book.title}">
                 <div class="book-info">
                     <h4>${book.title}</h4>
                     <p>${book.author}</p>
-                    <div class="progress-bar"><span style="width: ${book.progress}%;"></span></div>
-                    <span>%${book.progress} tamamlandı</span>
-                    <button class="btn-continue" onclick="window.location.href='book-detail.html?id=${book.id}'">Devam Et</button>
+                    <div class="progress-bar"><span style="width: ${progress}%;"></span></div>
+                    <span>%${progress} tamamlandı</span>
                 </div>
             </div>
-        `).join('');
-        };
+            `;
+            }).join('');
+
+        } catch (error) {
+            console.error("Dashboard kitap yükleme hatası:", error);
+            container.innerHTML = '<p>Veriler yüklenirken bir hata oluştu.</p>';
+        }
     }
 
     // --- CANLI ARAMA SİHRİ ---
@@ -216,30 +251,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateReadingGoal(read, total) {
+        // Hedef 0 ise veya henüz girilmemişse her şeyi sıfırla ve fonksiyonu durdur
+        if (!total || total <= 0) {
+            if (document.getElementById('target-percent')) document.getElementById('target-percent').innerText = "%0";
+            if (document.getElementById('books-read')) document.getElementById('books-read').innerText = "0";
+            if (document.getElementById('total-target')) document.getElementById('total-target').innerText = "0";
+            const circularProgress = document.querySelector('.circular-progress');
+            if (circularProgress) {
+                circularProgress.style.background = `rgba(0,0,0,0.1)`; // Tamamen boş (gri) arka plan
+            }
+            return;
+        }
+
         const percent = Math.round((read / total) * 100);
-        const degree = (percent / 100) * 360;
+        const safePercent = percent > 100 ? 100 : percent;
+        const degree = (safePercent / 100) * 360;
 
-        // Yüzde metnini güncelle
+        // Metinleri güncelle
         const targetPercentEl = document.getElementById('target-percent');
-        if (targetPercentEl) targetPercentEl.innerText = `${percent}%`;
+        if (targetPercentEl) targetPercentEl.innerText = `%${safePercent}`;
 
-        // Alt metni güncelle (opsiyonel, statik değilse)
         const booksReadEl = document.getElementById('books-read');
         const totalTargetEl = document.getElementById('total-target');
         if (booksReadEl) booksReadEl.innerText = read;
         if (totalTargetEl) totalTargetEl.innerText = total;
 
-        // Koyu rengi (ilerlemeyi) daireye uygula
+        // Çemberi güncelle
         const circularProgress = document.querySelector('.circular-progress');
         if (circularProgress) {
-            // #4a6b6f görseldeki koyu yeşil tonu
-            circularProgress.style.background = `conic-gradient(#4a6b6f ${degree}deg, rgba(0,0,0,0.1) 0deg)`;
+            // Renk geçişini (conic-gradient) safePercent'e göre ayarlar
+            circularProgress.style.background = `conic-gradient(#4a6b6f ${degree}deg, rgba(0,0,0,0.1) ${degree}deg)`;
         }
     }
-
-    // Örnek kullanım (Firebase'den veriler gelince burayı çağırabilirsin)
-    updateReadingGoal(8, 50);
-
     // "Daha Fazla Göster" Butonu Olayı
     if (showMoreBtn) {
         showMoreBtn.addEventListener('click', fetchRecommendations);
