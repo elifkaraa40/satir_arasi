@@ -180,10 +180,12 @@ textarea {
     }
 }
 
-/* --- NAVBAR ARAMA ÇUBUĞU (DASHBOARD İLE BİREBİR AYNI) --- */
+/* --- NAVBAR ARAMA ÇUBUĞU DÜZENLEMELERİ --- */
 .nav-right .search-container {
     position: relative;
     margin-right: 20px;
+    width: auto !important; 
+    max-width: none !important;
 }
 
 .nav-right .search-bar {
@@ -207,5 +209,75 @@ textarea {
     outline: none;
     padding: 0;
     padding-left: 10px;
-    width: auto;
+    width: 200px; /* Sabit bir genişlik vermek daha düzenli durur */
+}
+
+/* Öneriler kutusunu arama çubuğuyla aynı hizaya getiriyoruz */
+.nav-right .search-suggestions {
+    position: absolute;
+    top: 100%;
+    right: 20px; /* Arama çubuğunun sağ boşluğuyla (margin-right) aynı olmalı */
+    width: 250px; /* Dashboard'daki input genişliğiyle uyumlu hale getirdik */
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    margin-top: 5px;
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    padding: 10px;
+    /* Kutunun input dışına taşmasını engellemek için */
+    box-sizing: border-box; 
+}
+
+.nav-right .suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    border-radius: 10px;
+    border: none !important; 
+    margin-bottom: 5px;
+}
+
+.nav-right .suggestion-item:hover {
+    background-color: #f4f7f6;
+}
+
+.nav-right .suggestion-item img {
+    width: 45px;
+    height: 65px;
+    object-fit: cover;
+    border-radius: 5px;
+    flex-shrink: 0;
+    border: none !important;
+}
+
+.nav-right .suggestion-info {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    width: 100%;
+}
+
+.nav-right .suggestion-info h5 {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #333;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nav-right .suggestion-info p {
+    margin: 3px 0 0 0;
+    font-size: 0.8rem;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

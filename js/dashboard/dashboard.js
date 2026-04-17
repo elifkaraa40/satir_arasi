@@ -3,8 +3,7 @@ import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/
 import { doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- ELEMENT SEÇİCİLER ---
-    let allBooks = []; // API'den gelen kitapları burada saklayacağız
+    let allBooks = []; 
     const headerUsername = document.getElementById('headerUsername');
     const headerAvatar = document.getElementById('headerAvatar');
     const navUserProfile = document.getElementById('navUserProfile');
@@ -21,22 +20,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (userSnap.exists()) {
                     const data = userSnap.data();
 
-                    // 1. Hedef Bilgisini Al (Firebase'den geliyor)
-                    const hedef = data.readingGoal || 0;
+                    // 1. HEDEFİ LOCALSTORAGE'DAN AL (my-library ile tam uyum)
+                    const userGoals = JSON.parse(localStorage.getItem('myUserGoals')) || { "2026": 8, "2025": 12, "2024": 15 };
+                    const currentYear = new Date().getFullYear().toString();
+                    const hedef = userGoals[currentYear] || 8;
 
-                    // 2. Okunan Kitap Sayısını Canlı Say (Koleksiyondan sayıyoruz)
-                    // "Okuduklarım" etiketine sahip kaç kitap varsa hepsini getirir
+                    // 2. SADECE BU YIL OKUNANLARI SAY
                     const libraryRef = collection(db, "users", user.uid, "library");
                     const qRead = query(libraryRef, where("status", "==", "Okuduklarım"));
                     const readSnap = await getDocs(qRead);
-                    const okunan = readSnap.size; // Filtrelenmiş kitap sayısı
+                    
+                    let okunan = 0;
+                    readSnap.forEach(doc => {
+                        const d = doc.data();
+                        if(d.readYear === currentYear || (!d.readYear && currentYear === "2026")) {
+                            okunan++;
+                        }
+                    });
 
                     // 3. Arayüzü ve Çemberi Güncelle
                     updateReadingGoal(okunan, hedef);
 
-                    // Diğer fonksiyonlar
                     fetchCurrentBooks(user.uid);
-                    // Hoş geldin mesajı vs...
                     if (welcomeNameSpan) welcomeNameSpan.innerText = data.username || "Okur";
                 }
             } catch (e) {
@@ -47,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Dropdown menü işlemleri
     const profileDropdown = document.querySelector('.user-profile-dropdown');
     const dropdownMenu = document.querySelector('.dropdown-menu');
 
@@ -71,21 +75,12 @@ document.addEventListener('DOMContentLoaded', () => {
         dropdownMenu.addEventListener('mouseenter', () => clearTimeout(timeout));
     }
 
-    // --- KİTAP ÇEKME VE LİSTELEME İŞLEMLERİ ---
-
-    // 1. Firebase'den Okunan Kitapları Getir
     async function fetchCurrentBooks(userId) {
         const container = document.getElementById('current-books-container');
         if (!container) return;
 
         try {
-            // bookDetail.js'deki yapıya uygun olarak 'library' koleksiyonuna bakıyoruz
-            // Ve durumun "Okunuyor" (Türkçe) olduğunu kontrol ediyoruz
-            const q = query(
-                collection(db, "users", userId, "library"),
-                where("status", "==", "Okunuyor")
-            );
-
+            const q = query(collection(db, "users", userId, "library"), where("status", "==", "Okunuyor"));
             const querySnapshot = await getDocs(q);
 
             if (querySnapshot.empty) {
@@ -98,14 +93,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const books = [];
-            querySnapshot.forEach((doc) => {
-                books.push({ id: doc.id, ...doc.data() });
-            });
+            querySnapshot.forEach((doc) => books.push({ id: doc.id, ...doc.data() }));
 
             container.innerHTML = books.map(book => {
-                // İlerleme yüzdesini hesapla (Eğer bookDetail'de progress yoksa manuel hesaplıyoruz)
                 const progress = book.progress || Math.round(((book.currentPage || 0) / (book.totalPages || 1)) * 100);
-
                 return `
             <div class="book-item" onclick="window.location.href='book-detail.html?id=${book.id}'" style="cursor: pointer;">
                 <img src="${book.cover || 'img/default-book.jpg'}" alt="${book.title}">
@@ -115,17 +106,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="progress-bar"><span style="width: ${progress}%;"></span></div>
                     <span>%${progress} tamamlandı</span>
                 </div>
-            </div>
-            `;
+            </div>`;
             }).join('');
-
         } catch (error) {
             console.error("Dashboard kitap yükleme hatası:", error);
             container.innerHTML = '<p>Veriler yüklenirken bir hata oluştu.</p>';
         }
     }
 
-    // --- CANLI ARAMA SİHRİ ---
     const searchInput = document.getElementById('searchInput');
     const suggestionsPanel = document.getElementById('searchSuggestions');
 
@@ -136,19 +124,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 suggestionsPanel.style.display = 'none';
                 return;
             }
-
             try {
-                // 'intitle:' operatörü kelimenin mutlaka kitap isminde geçmesini sağlar
-                const searchQuery = `intitle:${term}`;
-                // Arama yaparken 'intitle' kullanmak akademik makaleleri eler, doğrudan isme odaklanır
-                const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=intitle:${term}+subject:fiction&printType=books&orderBy=relevance&langRestrict=tr&maxResults=8`);
-
+                const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=intitle:${term}&printType=books&orderBy=relevance&langRestrict=tr&maxResults=8`);
                 const data = await response.json();
-                const results = data.items || [];
-                renderSearchSuggestions(results);
-            } catch (error) {
-                console.error("Arama hatası:", error);
-            }
+                renderSearchSuggestions(data.items || []);
+            } catch (error) { console.error("Arama hatası:", error); }
         });
     }
 
@@ -163,131 +143,76 @@ document.addEventListener('DOMContentLoaded', () => {
                     <h5>${item.volumeInfo.title}</h5>
                     <p>${item.volumeInfo.authors?.join(', ') || 'Bilinmeyen Yazar'}</p>
                 </div>
-            </div>
-        `).join('');
+            </div>`).join('');
         }
         suggestionsPanel.style.display = 'block';
     }
 
-    // Panel dışına tıklayınca kapat
     document.addEventListener('click', (e) => {
-        if (suggestionsPanel && !e.target.closest('.search-container')) {
-            suggestionsPanel.style.display = 'none';
-        }
+        if (suggestionsPanel && !e.target.closest('.search-container')) suggestionsPanel.style.display = 'none';
     });
 
-    // 2. Harici API'den Rastgele Öneriler Getir (6 Kitap)
-    // --- KİTAP ÇEKME VE LİSTELEME İŞLEMLERİ ---
-
-    // 2. Harici API'den Rastgele Öneriler Getir
     const recContainer = document.getElementById('rec-container');
     const showMoreBtn = document.getElementById('show-more-btn');
 
     async function fetchRecommendations() {
         if (!recContainer) return;
-
         try {
-            // 'subject:fiction' Google'a sadece kurgu (roman, öykü vb.) istediğimizi söyler.
-            // Yanına 'modern' ve 'edebiyat' ekleyerek popülerliği tetikliyoruz.
             const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=subject:fiction+modern+edebiyat+roman&printType=books&orderBy=relevance&langRestrict=tr&maxResults=40`);
             const data = await response.json();
-            let items = data.items || [];
-
-            // ELİT FİLTRELEME: Edebiyat dışı her şeyi ayıklıyoruz
-            const forbiddenKeywords = [
-                'yıllığı', 'ansiklopedisi', 'sözlüğü', 'araştırmaları', 'dergisi',
-                'fakültesi', 'eğitim', 'ders', 'tez', 'makale', 'sempozyum',
-                'tarihi', 'rehberi', 'kılavuzu', 'incelemesi', 'üzerine', 'rapor'
-            ];
-
-            const literaryBooks = items.filter(item => {
+            const forbiddenKeywords = ['yıllığı', 'ansiklopedisi', 'sözlüğü', 'araştırmaları', 'dergisi', 'fakültesi', 'eğitim', 'ders', 'tez', 'makale', 'sempozyum', 'tarihi', 'rehberi', 'kılavuzu', 'incelemesi', 'üzerine', 'rapor'];
+            
+            const literaryBooks = (data.items || []).filter(item => {
                 const title = item.volumeInfo.title?.toLowerCase() || "";
-                const hasCover = item.volumeInfo.imageLinks?.thumbnail;
-
-                // Başlığında yukarıdaki "sıkıcı" kelimelerden biri bile geçiyorsa alma
-                const isNonFiction = forbiddenKeywords.some(word => title.includes(word));
-
-                // Sadece kapak resmi olan ve edebi türde olduğunu düşündüğümüz kitaplar
-                return hasCover && !isNonFiction;
+                return item.volumeInfo.imageLinks?.thumbnail && !forbiddenKeywords.some(word => title.includes(word));
             });
 
-            // 1000Kitap gibi her seferinde farklı popüler kitaplar gelsin
             const selected = literaryBooks.sort(() => 0.5 - Math.random()).slice(0, 6);
-
             renderRecommendations(selected);
-        } catch (error) {
-            console.error("Öneriler çekilemedi:", error);
-        }
+        } catch (error) { console.error("Öneriler çekilemedi:", error); }
     }
+    
     function renderRecommendations(books) {
         if (!recContainer) return;
-
         recContainer.innerHTML = books.map(item => {
             const info = item.volumeInfo;
-            const bookId = item.id;
-
-            const coverImg = info.imageLinks?.thumbnail || 'img/default-book.jpg';
-
-            // Tıklanma sorununu çözmek için: Tırnak işaretlerini temizlemek yerine 
-            // HTML attribute içinde sorun yaratmayacak şekilde encode ediyoruz.
             const safeTitle = info.title.replace(/"/g, '&quot;');
             const safeAuthor = (info.authors?.join(', ') || 'Bilinmeyen Yazar').replace(/"/g, '&quot;');
-
             return `
-            <div class="recommendation-item" 
-                 onclick="location.href='book-detail.html?id=${bookId}'" 
-                 style="cursor: pointer;">
-                <img src="${coverImg}" alt="${safeTitle}">
+            <div class="recommendation-item" onclick="location.href='book-detail.html?id=${item.id}'" style="cursor: pointer;">
+                <img src="${info.imageLinks?.thumbnail || 'img/default-book.jpg'}" alt="${safeTitle}">
                 <div class="rec-info">
                     <h4>${safeTitle}</h4>
                     <p>${safeAuthor}</p>
-                    <div class="tags">
-                        <span>${info.categories?.[0] || 'Genel'}</span>
-                    </div>
+                    <div class="tags"><span>${info.categories?.[0] || 'Genel'}</span></div>
                 </div>
-            </div>
-        `;
+            </div>`;
         }).join('');
     }
 
+    // --- HEDEF ÇEMBERİNİ GÜNCELLEME VE KESKİN BOYAMA ---
     function updateReadingGoal(read, total) {
-        // Hedef 0 ise veya henüz girilmemişse her şeyi sıfırla ve fonksiyonu durdur
-        if (!total || total <= 0) {
-            if (document.getElementById('target-percent')) document.getElementById('target-percent').innerText = "%0";
-            if (document.getElementById('books-read')) document.getElementById('books-read').innerText = "0";
-            if (document.getElementById('total-target')) document.getElementById('total-target').innerText = "0";
-            const circularProgress = document.querySelector('.circular-progress');
-            if (circularProgress) {
-                circularProgress.style.background = `rgba(0,0,0,0.1)`; // Tamamen boş (gri) arka plan
-            }
-            return;
-        }
-
-        const percent = Math.round((read / total) * 100);
+        if (!total || total <= 0) total = 8; // Sıfıra bölünmeyi engelle
+        
+        let percent = Math.round((read / total) * 100);
         const safePercent = percent > 100 ? 100 : percent;
         const degree = (safePercent / 100) * 360;
 
-        // Metinleri güncelle
         const targetPercentEl = document.getElementById('target-percent');
-        if (targetPercentEl) targetPercentEl.innerText = `%${safePercent}`;
-
         const booksReadEl = document.getElementById('books-read');
         const totalTargetEl = document.getElementById('total-target');
+        
+        if (targetPercentEl) targetPercentEl.innerText = `%${safePercent}`;
         if (booksReadEl) booksReadEl.innerText = read;
         if (totalTargetEl) totalTargetEl.innerText = total;
 
-        // Çemberi güncelle
         const circularProgress = document.querySelector('.circular-progress');
         if (circularProgress) {
-            // Renk geçişini (conic-gradient) safePercent'e göre ayarlar
-            circularProgress.style.background = `conic-gradient(#4a6b6f ${degree}deg, rgba(0,0,0,0.1) ${degree}deg)`;
+            // "0deg" taktiği ile renklerin birbirine karışmasını engelliyoruz
+            circularProgress.style.background = `conic-gradient(#4a6b6f ${degree}deg, rgba(74, 107, 111, 0.2) 0deg)`;
         }
     }
-    // "Daha Fazla Göster" Butonu Olayı
-    if (showMoreBtn) {
-        showMoreBtn.addEventListener('click', fetchRecommendations);
-    }
 
-    // Sayfa yüklendiğinde önerileri getir
+    if (showMoreBtn) showMoreBtn.addEventListener('click', fetchRecommendations);
     fetchRecommendations();
 });

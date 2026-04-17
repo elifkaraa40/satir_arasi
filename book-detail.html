@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kitap Detayı - Satır Arası</title>
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/detail.css">
 </head>
+
 <body>
 
     <nav class="main-nav">
@@ -30,7 +32,7 @@
                 </div>
                 <div id="searchSuggestions" class="search-suggestions" style="display: none;"></div>
             </div>
-            
+
             <a href="login.html" class="btn-login-nav" id="navLoginBtn">Giriş Yap</a>
 
             <div class="user-profile-dropdown" id="navUserProfile" style="display:none;">
@@ -52,16 +54,24 @@
     </nav>
 
     <main class="book-detail-container">
-        
+
         <div class="book-image">
-            <img src="https://books.google.com/books/content?id=v3Z7DwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api" alt="Satranç Kitap Kapağı" id="bookCover" width="250">
-            
-            <div class="page-tracker" id="pageTracker" style="display: none; margin-top: 20px; background: rgba(255,255,255,0.8); padding: 15px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-                <label style="font-weight: 600; color: #4a6b6f; font-size: 0.9rem; display:block; margin-bottom: 10px;">Okuma İlerlemesi</label>
+            <img src="https://books.google.com/books/content?id=v3Z7DwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+                alt="Kitap Kapağı" id="bookCover" width="250">
+
+            <div class="page-tracker" id="pageTracker"
+                style="display: none; margin-top: 20px; background: rgba(255,255,255,0.8); padding: 15px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                <label
+                    style="font-weight: 600; color: #4a6b6f; font-size: 0.9rem; display:block; margin-bottom: 10px;">Okuma
+                    İlerlemesi</label>
                 <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
-                    <input type="number" id="currentPage" placeholder="0" style="width: 70px; padding: 8px; border-radius: 10px; border: 1px solid rgba(74, 107, 111, 0.3); text-align: center; outline: none; font-family: inherit; font-weight: 600;" min="0">
+                    <input type="number" id="currentPage" placeholder="0"
+                        style="width: 70px; padding: 8px; border-radius: 10px; border: 1px solid rgba(74, 107, 111, 0.3); text-align: center; outline: none; font-family: inherit; font-weight: 600;"
+                        min="0">
                     <span style="color: #4a6b6f; font-weight: bold;">/</span>
-                    <input type="number" id="totalPages" placeholder="0" style="width: 70px; padding: 8px; border-radius: 10px; border: 1px solid rgba(74, 107, 111, 0.3); text-align: center; outline: none; font-family: inherit; font-weight: 600;" min="1">
+                    <input type="number" id="totalPages" placeholder="0"
+                        style="width: 70px; padding: 8px; border-radius: 10px; border: 1px solid rgba(74, 107, 111, 0.3); text-align: center; outline: none; font-family: inherit; font-weight: 600;"
+                        min="1">
                 </div>
             </div>
         </div>
@@ -70,36 +80,45 @@
             <h1 id="bookTitle">Satranç</h1>
             <h2 id="bookAuthor">Stefan Zweig</h2>
 
-            <div class="status-selector" id="authRequiredStatus">
+            <div class="status-selector" id="authRequiredStatus" style="display: flex; align-items: center; gap: 15px;">
                 <label for="readingStatus">Okuma Durumu:</label>
                 <select id="readingStatus">
                     <option value="okunacak">Okunacak</option>
                     <option value="okunuyor">Okunuyor</option>
                     <option value="okudum">Okudum</option>
                 </select>
+                <button id="deleteBookBtn" class="btn-delete"
+                    style="background: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 50px; cursor: pointer; font-size: 0.85rem; font-weight: 600; display: none;">
+                    <i class="fa-solid fa-trash"></i> Kitaplığımdan Sil
+                </button>
             </div>
 
             <div class="book-summary">
                 <h3>Kitap Özeti</h3>
                 <p id="bookDescription">
-                    Dünya edebiyatının en sarsıcı metinlerinden biri olan Satranç, insanın baskı altındaki ruh halini ve direnme gücünü muazzam bir derinlikle işler. Dr. B.'nin tecrit altındaki mücadelesi, sadece bir oyun değil, bir varoluş savaşına dönüşür.
+                    Dünya edebiyatının en sarsıcı metinlerinden biri olan Satranç, insanın baskı altındaki ruh halini ve
+                    direnme gücünü muazzam bir derinlikle işler. Dr. B.'nin tecrit altındaki mücadelesi, sadece bir oyun
+                    değil, bir varoluş savaşına dönüşür.
                 </p>
             </div>
-            
+
         </div>
 
         <div class="review-section" id="reviewSection">
             <h3>Kişisel Değerlendirme</h3>
-            
+
             <div class="stars" id="starRating">
-                <p>Puanınız: <span style="cursor:pointer">⭐</span><span style="cursor:pointer">⭐</span><span style="cursor:pointer">⭐</span><span style="cursor:pointer">⭐</span><span style="cursor:pointer">⭐</span></p>
+                <p>Puanınız: <span style="cursor:pointer">⭐</span><span style="cursor:pointer">⭐</span><span
+                        style="cursor:pointer">⭐</span><span style="cursor:pointer">⭐</span><span
+                        style="cursor:pointer">⭐</span></p>
             </div>
 
             <div class="note-area">
                 <label for="userNote">Kitap Notları:</label>
                 <br>
-                <textarea id="userNote" rows="5" cols="40" maxlength="2000" placeholder="Bu kitap hakkında ne düşünüyorsunuz? (Kendinize notlar...)"></textarea>
-                
+                <textarea id="userNote" rows="5" cols="40" maxlength="2000"
+                    placeholder="Bu kitap hakkında ne düşünüyorsunuz? (Kendinize notlar...)"></textarea>
+
                 <div id="charCounter">0 / 2000</div>
             </div>
             <br>
@@ -143,6 +162,7 @@
     <script type="module" src="js/auth/auth.js"></script>
     <script type="module" src="js/dashboard/dashboard.js"></script>
     <script type="module" src="js/books/bookDetail.js"></script>
-    
+
 </body>
+
 </html>
