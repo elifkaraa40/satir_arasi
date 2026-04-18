@@ -1,6 +1,8 @@
-import { auth, db } from '../firebase/firebaseConfig.js';
+import { collection, getDocs,doc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+import { auth, db } from "../firebase/firebaseConfig.js";
+import { deleteBookFromLibrary } from "../books/deleteBook.js";
+import { updateUserReadingGoal } from "../books/updateBook.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     const tabButtons = document.querySelectorAll('.tab-btn');
@@ -15,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveGoalBtn = document.getElementById('saveGoalBtn');
 
     let userBooks = [];
-    let userGoals = JSON.parse(localStorage.getItem('myUserGoals')) || { "2026": 8 };
+    let userGoals = JSON.parse(localStorage.getItem('myUserGoals')) 
     let currentActiveTab = 'Tümü';
 
     onAuthStateChanged(auth, async (user) => {
@@ -23,7 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (booksContainer) booksContainer.innerHTML = '<p style="text-align:center; width:100%; color:#777; padding:40px;">Kütüphaneniz yükleniyor <i class="fa-solid fa-spinner fa-spin"></i></p>';
 
             try {
-                const libraryRef = collection(db, "users", user.uid, "library");
+
+                // Kullanıcının kütüphanesini Firebase'den çek
+                const libraryRef = collection(db, "users", user.uid, "kullaniciKitapligi");
                 const querySnapshot = await getDocs(libraryRef);
                 userBooks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
@@ -182,15 +186,51 @@ document.addEventListener('DOMContentLoaded', () => {
     if (searchInput) searchInput.addEventListener('input', () => renderBooks(currentActiveTab));
     if (sortSelect) sortSelect.addEventListener('change', () => renderBooks(currentActiveTab));
     if (goalYearSelect) goalYearSelect.addEventListener('change', renderGoal);
-
-    if (saveGoalBtn) {
-        saveGoalBtn.addEventListener('click', () => {
-            const newGoal = parseInt(yearlyGoalInput.value);
-            if (newGoal > 0) {
-                userGoals[goalYearSelect.value] = newGoal;
-                localStorage.setItem('myUserGoals', JSON.stringify(userGoals));
-                renderGoal();
-            }
-        });
-    }
 });
+// --- OKUMA HEDEFİ KAYDETME BLOĞU ---
+if (saveGoalBtn) {
+    saveGoalBtn.addEventListener('click', async () => {
+        const newGoal = parseInt(yearlyGoalInput.value);
+        const user = auth.currentUser;
+
+        if (user && newGoal > 0) {
+            try {
+                const userRef = doc(db, "users", user.uid);
+              
+
+                // Arayüzü güncelle (Çember ve rakamlar)
+                renderGoal();
+
+                // Görsel geri bildirim (Yeşil buton efekti)
+                const originalText = saveGoalBtn.innerText;
+                saveGoalBtn.innerText = "✓";
+                saveGoalBtn.style.background = "#2ecc71";
+
+                setTimeout(() => {
+                    saveGoalBtn.innerText = originalText;
+                    saveGoalBtn.style.background = "#4a6b6f";
+                }, 1000);
+
+            } catch (error) {
+                console.error("Firebase kayıt hatası:", error);
+                alert("Hedef kaydedilemedi.");
+            }
+        } else {
+            alert("Lütfen geçerli bir hedef girin.");
+        }
+    }); // addEventListener burada kapanıyor
+} // if (saveGoalBtn) burada kapanıyor
+ async function handleDelete(bookId) {
+    if (confirm("Bu kitabı silmek istediğine emin misin?")) {
+        const result = await deleteBookFromLibrary(bookId);
+        if (result.success) {
+            // Bellekteki listeyi güncelle (Firebase'e tekrar gitmeye gerek kalmaz)
+            userBooks = userBooks.filter(b => b.id !== bookId); 
+            renderBooks();   // Listeyi tekrar çiz
+            updateDashboard(); // Üst paneli güncelle
+            renderGoal();      // Hedef grafiğini güncelle
+        }
+    }
+}   
+
+

@@ -1,5 +1,7 @@
 //kullanıcının kitaplığını gösterme
 // js/library/library.js
+// js/library/library.js dosyasının en üstü
+import { saveBookToFirebase } from "../books/addBook.js";
 
 // Sayfa yüklendiğinde çalışacak kısım
 window.addEventListener('DOMContentLoaded', () => {
@@ -45,36 +47,43 @@ async function fetchBooks(query) {
     }
 }
 
-function displayBooks(books) {
-    booksContainer.innerHTML = ''; // İçeriği temizle
 
-    if (!books) {
-        booksContainer.innerHTML = '<p>Maalesef kitap bulunamadı.</p>';
-        return;
-    }
+
+// ... (fetchBooks ve diğer kodların olduğu yer)
+
+function displayBooks(books) {
+    booksContainer.innerHTML = ''; 
 
     books.forEach(book => {
         const info = book.volumeInfo;
         const thumbnail = info.imageLinks ? info.imageLinks.thumbnail : 'https://via.placeholder.com/128x192?text=Kapak+Yok';
         
-        const bookCard = `
-            <div class="book-card">
-                <img src="${thumbnail}" alt="${info.title}">
-                <div class="book-info">
-                    <h3>${info.title}</h3>
-                    <p>${info.authors ? info.authors.join(', ') : 'Bilinmeyen Yazar'}</p>
-                    <button class="add-btn" onclick="addToMyLibrary('${book.id}', '${info.title}')">
-                        Kitaplığıma Ekle
-                    </button>
-                </div>
+        // Kitap kartını oluştur
+        const bookCard = document.createElement('div');
+        bookCard.className = 'book-card';
+        // data-id özniteliğini ekliyoruz
+        bookCard.innerHTML = `
+           <img src="${thumbnail}" 
+               alt="${info.title}" 
+               loading="lazy" 
+               onerror="this.onerror=null; this.src='img/default-book.jpg';">
+            <div class="book-info">
+                <h3>${info.title}</h3>
+                <p>${info.authors ? info.authors.join(', ') : 'Bilinmeyen Yazar'}</p>
+                <button class="view-btn" data-id="${book.id}">Kitabı İncele</button>
             </div>
         `;
-        booksContainer.innerHTML += bookCard;
+        booksContainer.appendChild(bookCard);
     });
 }
 
-// Şimdilik sadece konsola yazdıralım, sonra Firebase'e bağlayacağız
-function addToMyLibrary(id, title) {
-    alert(title + " yakında kitaplığına eklenecek! (Firebase entegrasyonu sıradaki adım)");
-}
+// Olay Delegasyonu: Tek bir listener, tüm butonları yönetir
+booksContainer.addEventListener('click', (e) => {
+    if (e.target.classList.contains('view-btn')) {
+        const bookId = e.target.getAttribute('data-id');
+        window.location.href = `book-detail.html?id=${bookId}`;
+    }
+});
+
+
 

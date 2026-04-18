@@ -2,14 +2,21 @@ import { doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebase
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 import { db, auth } from "../firebase/firebaseConfig.js";
 
-const authRequiredStatus = document.getElementById('authRequiredStatus');
-const reviewSection = document.getElementById('reviewSection');
+//const authRequiredStatus = document.getElementById('authRequiredStatus');
+//const reviewSection = document.getElementById('reviewSection');
 
 // --- 1. URL'DEN ID ALMA VE TEMİZLEME ---
 const urlParams = new URLSearchParams(window.location.search);
-let rawId = urlParams.get('id') || urlParams.get('bookId'); 
+const currentBookId = urlParams.get('id') 
+// Global değişkenler
+let currentRating = 0;
 
-const currentBookId = rawId ? rawId.split(':')[0].trim() : null;
+
+if (!currentBookId) {
+    // ID yoksa kullanıcıyı arama sayfasına geri gönder veya bir uyarı ver
+    console.error("Kitap ID'si bulunamadı!");
+}
+
 
 // --- 2. GOOGLE BOOKS API'DEN KİTAP ÇEK ---
 async function fetchBookFromAPI() {
@@ -79,7 +86,7 @@ async function initializeInteractiveFeatures(user) {
     const totalPagesInput = document.getElementById('totalPages');
     
     let currentRating = 0; 
-    const bookRef = doc(db, "users", user.uid, "library", currentBookId);
+    const bookRef = doc(db, "users", user.uid, "kullaniciKitapligi", currentBookId);
 
     // --- FIREBASE'DEN MEVCUT VERİYİ ÇEK ---
     try {
@@ -180,48 +187,61 @@ async function initializeInteractiveFeatures(user) {
     }
 
     // --- KAYDETME (CREATE/UPDATE) ---
-    if (saveButton) {
-        saveButton.addEventListener('click', async () => {
-            const currentPage = parseInt(currentPageInput.value) || 0;
-            const totalPages = parseInt(totalPagesInput.value) || 0;
+    // --- KAYDETME (CREATE/UPDATE) ---
+if (saveButton) {
+    saveButton.addEventListener('click', async () => {
+        const currentPage = parseInt(currentPageInput.value) || 0;
+        const totalPages = parseInt(totalPagesInput.value) || 0;
+        const selectedValue = statusSelect.value; // "okunuyor", "okudum" veya "okunacak"
 
-            // Mantıksal Denetim
-            if (currentPage > totalPages) {
-                alert(`Hata: Kalınan sayfa sayısı (${currentPage}), kitabın toplam sayfa sayısından (${totalPages}) fazla olamaz!`);
-                return; 
-            }
+        // 1. Mantıksal Denetim
+        if (currentPage > totalPages) {
+            alert(`Hata: Kalınan sayfa sayısı (${currentPage}), kitabın toplam sayfa sayısından (${totalPages}) fazla olamaz!`);
+            return; 
+        }
 
-            // Puan Kontrolü
-            if (statusSelect.value === "okudum" && currentRating === 0) {
-                alert("Lütfen bitirdiğiniz kitap için bir puan seçin.");
-                return;
-            }
+        // 2. Puan Kontrolü
+        if (selectedValue === "okudum" && currentRating === 0) {
+            alert("Lütfen bitirdiğiniz kitap için bir puan seçin.");
+            return;
+        }
 
-            const libraryStatus = statusSelect.value === "okunuyor" ? "Okunuyor" : 
-                                 statusSelect.value === "okudum" ? "Okuduklarım" : "Okunacaklar";
+        // 3. İSİMLENDİRME STANDARTLAŞTIRMA (KRİTİK HATA BURADAYDI)
+        // Veritabanına mylibrary.js'in anladığı dilde gönderiyoruz
+        let libraryStatus = "Okunacaklar"; // varsayılan
+        if (selectedValue === "okunuyor") {
+            libraryStatus = "Okunuyor";
+        } else if (selectedValue === "okudum") {
+            libraryStatus = "Okuduklarım";
+        }
 
+        try {
             saveButton.innerText = "Kaydediliyor...";
-            
-            try {
-                await setDoc(bookRef, {
-                    id: currentBookId,
-                    title: document.getElementById('bookTitle').innerText,
-                    author: document.getElementById('bookAuthor').innerText,
-                    cover: document.getElementById('bookCover').src,
-                    status: libraryStatus,
-                    rating: currentRating,
-                    note: userNote.value,
-                    currentPage: currentPage,
-                    totalPages: totalPages,
-                    readYear: new Date().getFullYear().toString()
-                }, { merge: true });
+            saveButton.disabled = true;
 
-                alert("Değişiklikler kaydedildi!");
-                window.location.href = "my-library.html"; 
-            } catch (error) {
-                console.error("Kayıt Hatası:", error);
-                saveButton.innerText = "Kaydet";
-            }
-        });
-    }
+            await setDoc(bookRef, {
+                userId: user.uid,
+                id: currentBookId,
+                title: document.getElementById('bookTitle').innerText,
+                author: document.getElementById('bookAuthor').innerText,
+                cover: document.getElementById('bookCover').src,
+                status: libraryStatus, // Artık "Okuduklarım" gidiyor
+                rating: currentRating,
+                note: userNote.value,
+                currentPage: currentPage,
+                totalPages: totalPages,
+                readYear: new Date().getFullYear().toString(),
+                updatedAt: new Date() // Sıralama için eklendi
+            }, { merge: true });
+
+            alert("Değişiklikler kaydedildi!");
+            window.location.href = "my-library.html"; 
+        } catch (error) {
+            console.error("Kayıt Hatası:", error);
+            alert("Kaydedilemedi, lütfen tekrar deneyin.");
+            saveButton.innerText = "Kaydet";
+            saveButton.disabled = false;
+        }
+    });
+}
 }

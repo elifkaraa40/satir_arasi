@@ -25,8 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     const currentYear = new Date().getFullYear().toString();
                     const hedef = userGoals[currentYear] || 8;
 
-                    // 2. SADECE BU YIL OKUNANLARI SAY
-                    const libraryRef = collection(db, "users", user.uid, "library");
+
+                    // 2. Okunan Kitap Sayısını Canlı Say (Koleksiyondan sayıyoruz)
+                    // "Okuduklarım" etiketine sahip kaç kitap varsa hepsini getirir
+                    const libraryRef = collection(db, "users", user.uid, "kullaniciKitapligi");
                     const qRead = query(libraryRef, where("status", "==", "Okuduklarım"));
                     const readSnap = await getDocs(qRead);
                     
@@ -41,8 +43,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     // 3. Arayüzü ve Çemberi Güncelle
                     updateReadingGoal(okunan, hedef);
 
+
                     fetchCurrentBooks(user.uid);
+
+                    
+                    // Hoş geldin mesajı vs...
+
                     if (welcomeNameSpan) welcomeNameSpan.innerText = data.username || "Okur";
+                    
                 }
             } catch (e) {
                 console.error("Dashboard veri hatası:", e);
@@ -80,7 +88,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!container) return;
 
         try {
-            const q = query(collection(db, "users", userId, "library"), where("status", "==", "Okunuyor"));
+
+            // bookDetail.js'deki yapıya uygun olarak 'kullaniciKitapliği' na koleksiyonuna bakıyoruz
+            // Ve durumun "Okunuyor" (Türkçe) olduğunu kontrol ediyoruz
+            const q = query(
+                collection(db, "users", userId, "kullaniciKitapligi"),
+                where("status", "==", "Okunuyor")
+            );
+
+
             const querySnapshot = await getDocs(q);
 
             if (querySnapshot.empty) {
@@ -212,6 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
             circularProgress.style.background = `conic-gradient(#4a6b6f ${degree}deg, rgba(74, 107, 111, 0.2) 0deg)`;
         }
     }
+
 
     if (showMoreBtn) showMoreBtn.addEventListener('click', fetchRecommendations);
     fetchRecommendations();

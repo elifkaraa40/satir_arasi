@@ -32,6 +32,7 @@ body.library-page {
     /* İçeriklerin arkadaki bitkilerin üzerinde daha rahat okunması için hafif karartma */
     background: rgba(255, 255, 255, 0.1); 
     min-height: 100vh;
+    
 }
 
 /* Kitap Kartları (Cam Efekti) */
@@ -113,9 +114,10 @@ body.library-page {
 }
 /*yeni dünyalar keşfet*/
 .glass-text {
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
     font-size: 2rem; /* Yazıyı büyütür */
     font-weight: 800; /* Daha kalın ve belirgin yapar */
-    color: #4a6e52; /* Temandaki koyu yeşil tonu */
+    color: #000000; /* Temandaki koyu yeşil tonu */
     text-transform: uppercase; /* Tüm harfleri büyük yapar */
     letter-spacing: 2px; /* Harf arası boşluk bırakarak ferahlatır */
     margin-bottom: 10px;
@@ -124,9 +126,14 @@ body.library-page {
     text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
 }
 .search-section p {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(4px);
+    padding: 5px 20px;
+    border-radius: 20px;
+    display: inline-block;
     font-size: 1.2rem;
-    font-weight: 500;
-    color: #0b1d10;
+    font-weight: 600;
+    color: #000000;
     font-style: italic; /* Eğik yazı daha "edebi" bir hava katar */
     opacity: 0.9;
 }
@@ -157,6 +164,7 @@ body.library-page {
 
 /* Ara butonu */
 #searchBtn {
+    
     padding: 0 30px; /* Butonu yanlardan genişlettik */
     font-size: 1.1rem;
     font-weight: 600;
@@ -181,11 +189,11 @@ body.library-page {
     align-items: center; /* Her şeyi yatayda ortalar */
     justify-content: center;
     text-align: center;
-    padding: 60px 20px; /* Yukarıdan ve aşağıdan boşluk bırakır */
+    padding: 120px 20px 60px 20px; /* Yukarıdan ve aşağıdan boşluk bırakır */
 }
 
 .search-bar-container {
-    width: 100%;
+    width: 200%;
     display: flex;
     justify-content: center;
     margin-top: 20px;
