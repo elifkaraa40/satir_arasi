@@ -96,23 +96,20 @@
     box-shadow: 0 4px 10px rgba(74, 107, 111, 0.3);
 }
 
-/* --- 4. Kitapların Geleceği Izgara Alanı (SCROLL DÜZELTİLDİ) --- */
+/* --- 4. Kitapların Geleceği Izgara Alanı --- */
 .library-books-grid {
     display: grid !important;
     grid-template-columns: repeat(4, 1fr) !important; 
     gap: 25px !important;
-    
-    /* Sabit yükseklik ve scroll bar ayarları */
     height: 750px; 
     overflow-y: auto !important;
     overflow-x: hidden !important; 
-    
     padding: 15px; 
     box-sizing: border-box;
     width: 100%;
 }
 
-/* Kartların İçeriğe Göre Şişmesini Engelleyen Kurallar */
+/* Kart Tasarımları */
 .library-books-grid .book-card {
     display: flex;
     flex-direction: column;
@@ -132,7 +129,6 @@
     transform: translateY(-5px);
 }
 
-/* Resim Boyutlarını Sabitleme */
 .library-books-grid .book-card img {
     width: 100%;
     max-width: 120px;
@@ -143,43 +139,15 @@
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
-/* İsimlerin Taşmasını Engelleyen Üç Nokta Kuralı */
-.library-books-grid .book-card h4 {
+.library-books-grid .book-card h4, .library-books-grid .book-card p {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     margin: 5px 0;
-    color: #2c3e50;
-    font-size: 0.95rem;
-    width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
-.library-books-grid .book-card p {
-    font-size: 0.8rem;
-    color: #666;
-    width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* Scrollbar Tasarımı */
-.library-books-grid::-webkit-scrollbar {
-    width: 8px;
-}
-.library-books-grid::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1); 
-    border-radius: 10px;
-}
-.library-books-grid::-webkit-scrollbar-thumb {
-    background: rgba(74, 107, 111, 0.5); 
-    border-radius: 10px;
-}
-.library-books-grid::-webkit-scrollbar-thumb:hover {
-    background: rgba(74, 107, 111, 0.8); 
-}
-
-/* --- Responsive (Mobil/Tablet Uyumluluğu) --- */
+/* --- Responsive Ayarları --- */
 @media (max-width: 1200px) {
     .library-books-grid { grid-template-columns: repeat(3, 1fr) !important; }
 }
@@ -198,8 +166,8 @@
     margin-top: 15px;
     max-height: 290px; 
     overflow-y: auto; 
+    overflow-x: hidden;
 }
-
 
 .reading-card {
     display: flex;
@@ -251,4 +219,35 @@
     outline: none;
     padding-left: 10px;
     width: 200px;
+}
+
+/* --- JİLET GİBİ SCROLLBAR DÜZENLEMESİ (TÜM SAYFA İÇİN) --- */
+
+/* 1. Genel kaydırma çubuğu genişliği */
+::-webkit-scrollbar {
+    width: 6px !important; /* Her yerde 6px sabitledik */
+    height: 6px !important;
+}
+
+/* 2. Yol (Track) */
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05); 
+    border-radius: 10px;
+}
+
+/* 3. Kaydırıcı (Thumb) */
+::-webkit-scrollbar-thumb {
+    background: rgba(74, 107, 111, 0.4) !important; 
+    border-radius: 10px;
+}
+
+/* 4. Hover durumu */
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(74, 107, 111, 0.7) !important; 
+}
+
+/* Firefox için tutarlılık */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(74, 107, 111, 0.4) transparent;
 }
