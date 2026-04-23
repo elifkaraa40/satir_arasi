@@ -2,6 +2,8 @@
 // js/library/library.js
 // js/library/library.js dosyasının en üstü
 import { saveBookToFirebase } from "../books/addBook.js";
+import { BookRequest } from "../books/bookRequest.js";
+const bookRequester = new BookRequest();
 
 // Sayfa yüklendiğinde çalışacak kısım
 window.addEventListener('DOMContentLoaded', () => {
@@ -33,6 +35,7 @@ searchBtn.addEventListener('click', () => {
     }
 });
 
+
 async function fetchBooks(query) {
     booksContainer.innerHTML = '<p>Kitaplar aranıyor...</p>';
     
@@ -53,6 +56,13 @@ async function fetchBooks(query) {
 
 function displayBooks(books) {
     booksContainer.innerHTML = ''; 
+    if (!books || books.length === 0) {
+        bookRequester.toggleVisibility(true); // İstek formunu göster
+        booksContainer.innerHTML ='<div style="grid-column: 1/-1; width: 100%;"><p class="no-results">Aradığınız kitap bulunamadı.</p></div>' ;
+        return; // Fonksiyonu burada kes, aşağıya devam etmesin
+    }
+
+    bookRequester.toggleVisibility(false); // Kitap varsa formu gizle
 
     books.forEach(book => {
         const info = book.volumeInfo;

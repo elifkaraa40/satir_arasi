@@ -57,11 +57,27 @@
             </div>
         </header>
 
+        
+        <!-- Kitap İstek Bölümü -->
+    <div id="request-book-section"style="display: none;">
+        <p class="request-text">Aradığınız kitabı bulamadınız mı? Sizin için ekleyelim!</p>
+        <button id="show-request-form-btn" class="btn-primary">Kitap İsteğinde Bulun</button>
+        </div>
+
+    <div id="book-request-form" style="display: none; flex-direction: column; gap: 10px; max-width: 400px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
+        <h3>Kitap İsteği</h3>
+        <input type="text" id="req-title" placeholder="Kitap Adı">
+        <input type="text" id="req-author" placeholder="Yazar">
+        <input type="number" id="req-year" placeholder="Yayın Yılı">
+        <button id="submit-request-btn" class="btn-primary">İsteği Gönder</button>
+    </div>
+    </div>
         <div id="books-container" class="books-grid">
             <div class="initial-message">
                 
             </div>
         </div>
+ 
     </div>
 
     <footer class="main-footer">

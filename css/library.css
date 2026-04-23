@@ -33,6 +33,7 @@ body.library-page {
     background: rgba(255, 255, 255, 0.1); 
     min-height: 100vh;
     
+    
 }
 
 /* Kitap Kartları (Cam Efekti) */
@@ -193,8 +194,201 @@ body.library-page {
 }
 
 .search-bar-container {
-    width: 200%;
+    width: 100%;
     display: flex;
     justify-content: center;
     margin-top: 20px;
 }
+/* kitap istek butonu */
+/* İstek Bölümü Konumu */
+#request-book-section {
+    max-width: 700px;
+    margin: 20px auto;
+    padding: 0 15px;
+}
+
+/* Konteynırı daha "katı" ve belirgin yapalım */
+.request-container.glass-effect {
+    background: rgba(255, 255, 255, 0.85); /* Şeffaflığı azalttık, daha beyaz yaptık */
+    backdrop-filter: blur(15px);
+    border: 2px solid #2d5a27; /* Kenarlara koyu yeşil belirgin bir hat ekledik */
+    border-radius: 20px;
+    padding: 35px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); /* Daha derin bir gölge */
+    text-align: center;
+}
+
+/* Üstteki metni daha okunaklı yapalım */
+.request-intro {
+    color: #1a3c34;
+    font-size: 1.3rem; /* Boyutu büyüttük */
+    font-weight: 800; /* Kalınlaştırdık */
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+    margin-bottom: 20px;
+}
+
+/* Butonu sayfadaki "Ara" butonu gibi belirgin yapalım */
+.btn-request-toggle {
+    background-color: #2d5a27; /* Senin sayfandaki o güzel yeşil tonu */
+    color: white !important;
+    padding: 15px 30px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(45, 90, 39, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-request-toggle:hover {
+    background-color: #1e3d1a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(45, 90, 39, 0.4);
+}
+/* Ana Kart Yapısı */
+.request-form-card {
+    display: none; /* Başlangıçta gizli, JS ile açılacak */
+    flex-direction: column;
+    gap: 15px;
+    max-width: 500px; /* Biraz genişlettik */
+    margin: 25px auto;
+    padding: 30px;
+    
+    /* Arka planı çok daha belirgin yapıyoruz */
+    background: rgba(255, 255, 255, 0.95); 
+    border: 3px solid #2d5a27; /* Kalın yeşil çerçeve */
+    border-radius: 15px;
+    
+    /* Derinlik katmak için güçlü gölge */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.request-form-card h3 {
+    color: #2d5a27;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+/* Giriş Alanlarını Parlatalım */
+.request-form-card input {
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.request-form-card input:focus {
+    border-color: #2d5a27; /* Yazarken kenarlar yeşil olur */
+}
+
+ /* Kitap isteğinde bulunun */
+/* Ana Kapsayıcıyı Ortala */
+.request-mini-container {
+    display: flex ; /* JS ile açılacak */
+    flex-direction: column; /* Alt alta diz */
+    align-items: center; /* Yatayda ortala */
+    justify-content: center; /* Dikeyde ortala */
+    width: 100%;
+    margin: 40px 0 auto ; /* Ortalar */
+    gap: 15px;
+    display: flex;
+    text-align: center;
+
+}
+
+/* Yazıyı Sadeleştir */
+.request-text {
+    color: #1a3c34; /* Senin temandaki koyu yeşil */
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    background: rgba(255, 255, 255, 0.4); /* Çok hafif şeffaf bant[cite: 3] */
+    padding: 8px 20px;
+    border-radius: 50px; /* Oval görünüm[cite: 3] */
+    backdrop-filter: blur(5px); /* Hafif buzlu cam[cite: 3] */
+    display: inline-block; /* Şeridin tüm satırı kaplamasını engeller */
+    width: fit-content; /* Sadece yazı kadar yer kaplamasını sağlar */
+}
+
+/* Butonu Arama Butonuyla Uyumlu Yap */
+.request-btn-simple {
+    all: unset; /* Tarayıcı varsayılanlarını siler */
+    display: block !important;
+    margin: 0 auto !important; /* Kendi içinde ortalar */
+    background-color: #6a8e6d; /* Sayfandaki yeşil tonu[cite: 3] */
+    color: white !important;
+    padding: 10px 25px;
+    border-radius: 50px; /* Oval[cite: 3] */
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+    width: fit-content;
+}
+
+.request-btn-simple:hover {
+    background-color: #4f6b52;
+    transform: translateY(-2px);
+}
+/*aradığınız kitap bulunamadı*\
+/* "Aradığınız kitap bulunamadı" yazısının stili */
+.no-results {
+    display: table !important; /* Kutunun sadece yazı kadar yer kaplamasını sağlar */
+    margin: 20px auto !important; /* Ortalar */
+    padding: 10px 25px !important;
+    background: rgba(255, 255, 255, 0.45) !important;
+    backdrop-filter: blur(8px) !important;
+    border-radius: 50px !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: #1a3c34 !important;
+    font-weight: 600 !important;
+    height: auto !important; /* Uzamayı durdurur */
+    grid-column: 1 / -1 !important;
+}
+/* 1. Tüm bölümü kapsayan ana kutuyu hizala */
+#request-book-section {
+    flex-direction: column !important;
+    align-items: center !important;    /* İçindeki her şeyi yatayda ortalar */
+    width: 100% !important;            /* Sayfanın tamamına yayılmasını sağlar */
+    margin: 30px auto !important;
+    padding: 0 !important;
+    text-align: center !important;
+}
+
+/* 2. Üstteki Baloncuk (Hizalama Düzeltmesi) */
+.request-text {
+    display: block !important;         /* Table yerine block yapıp margin ile ortalıyoruz */
+    margin: 0 auto 15px auto !important; 
+    width: fit-content !important;     /* Sadece yazı kadar genişlik */
+    padding: 10px 25px !important;
+    background: rgba(255, 255, 255, 0.45) !important;
+    backdrop-filter: blur(8px) !important;
+    border-radius: 50px !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: #1a3c34 !important;
+    font-weight: 600 !important;
+    box-sizing: border-box !important;
+}
+
+/* 3. Kitap İstek Formu (Hizalama Düzeltmesi) */
+#book-request-form {
+    display: none; /* JS ile flex yapılacak */
+    flex-direction: column !important;
+    align-items: center !important;
+    margin: 0 auto !important;         /* Formu merkeze sabitler */
+    width: 90% !important;
+    max-width: 450px !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    border-radius: 20px !important;
+    padding: 30px !important;
+    border: 2px solid #2d5a27 !important;
+    box-sizing: border-box !important;
+}
+
