@@ -13,19 +13,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     onAuthStateChanged(auth, async (user) => {
         if (user) {
+            let hedef = 0;
+            let okunan = 0;
+            const currentYear = new Date().getFullYear().toString();
             try {
                 // 1. Kullanıcının kendi dokümanından hedefi çek
                 const userRef = doc(db, "users", user.uid);
                 const userSnap = await getDoc(userRef);
 
-                let hedef = 0;
+                
                 if (userSnap.exists()) {
                     const data = userSnap.data();
+                    if (welcomeNameSpan) welcomeNameSpan.innerText = data.username || "Okur";
 
                     // 1. HEDEFİ LOCALSTORAGE'DAN AL (my-library ile tam uyum)
                     const userGoals = JSON.parse(localStorage.getItem('myUserGoals')) || { "2026": 8, "2025": 12, "2024": 15 };
                     const currentYear = new Date().getFullYear().toString();
-                    const hedef = userGoals[currentYear] || 8;
+                    hedef = userGoals[currentYear] || 8;
 
 
                     // 2. Okunan Kitap Sayısını Canlı Say (Koleksiyondan sayıyoruz)
@@ -34,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const qRead = query(libraryRef, where("status", "==", "Okuduklarım"));
                     const readSnap = await getDocs(qRead);
                     
-                    let okunan = 0;
+                    
                     readSnap.forEach(doc => {
                         const d = doc.data();
                         if(d.readYear === currentYear || (!d.readYear && currentYear === "2026")) {
@@ -58,12 +62,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 // 2. Kütüphaneden sadece bu yıl okunanları say
-                const libraryRef = collection(db, "users", user.uid, "library");
+                const libraryRef = collection(db, "users", user.uid, "kullaniciKitapligi");
                 const qRead = query(libraryRef, where("status", "==", "Okuduklarım"));
                 const readSnap = await getDocs(qRead);
 
                 // readSnap.size, sorgu sonucundaki kitap sayısını verir
-                const okunan = readSnap.size;
+                okunan = readSnap.size;
 
                 // 3. Arayüzü güncelle
                 updateReadingGoal(okunan, hedef);

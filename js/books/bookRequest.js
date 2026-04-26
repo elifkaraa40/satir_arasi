@@ -34,7 +34,7 @@ export class BookRequest {
         if (!title || !author) return alert("Kitap adı ve yazar alanları zorunludur!");
 
         try {
-            await addDoc(collection(db, "kitapIstekleri"), {
+            await addDoc(collection(db, "book-requests"), {
                 userId: user.uid,
                 userEmail: user.email,
                 bookTitle: title,
@@ -45,11 +45,21 @@ export class BookRequest {
             });
 
             alert("İsteğiniz başarıyla kaydedildi!");
+            if (this.form && typeof this.form.reset === "function") {
             this.form.reset();
-            this.section.style.display = 'none';
+            }else {
+                // Eğer form gerçek bir form etiketi değilse inputları manuel temizle
+                document.getElementById('req-title').value = "";
+                document.getElementById('req-author').value = "";
+                document.getElementById('req-year').value = "";
+            }
+            if (this.form) this.form.style.display = 'none';
+            if (this.section) this.section.style.display = 'none';
+            if (this.showBtn) this.showBtn.style.display = 'block';
+
         } catch (error) {
             console.error("Hata:", error);
-            alert("İstek gönderilemedi.");
+            alert("İstek gönderilemedi."+ error.message);
         }
     }
 
