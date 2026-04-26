@@ -252,6 +252,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// --- ÇIKIŞ İŞLEMİNİ TETİKLEYEN "KABLO" ---
+const logoutBtn = document.getElementById('logout-btn');
+
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+        try {
+            await signOut(auth); // Firebase'e çıkış yap dedik
+            window.location.href = 'index.html'; // Kullanıcıyı ana sayfaya gönderdik
+        } catch (error) {
+            alert("Çıkış yapılırken bir hata oluştu: " + error.message);
+        }
+    });
+}
+
 // Resmi küçültüp boyutu optimize eden fonksiyon
 const compressImage = (file, maxWidth = 200, maxHeight = 200) => {
     return new Promise((resolve, reject) => {
