@@ -8,13 +8,43 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-// Resmi metne çevir (base64)
-const toBase64 = file => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-});
+// Resmi küçültüp optimize eden fonksiyon
+const compressImage = (file, maxWidth = 150, maxHeight = 150) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height *= maxWidth / width;
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width *= maxHeight / height;
+                        height = maxHeight;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                // 0.7 kalitesinde JPEG olarak çıktı al (Firestore limitine takılmaz)
+                resolve(canvas.toDataURL('image/jpeg', 0.7));
+            };
+        };
+        reader.onerror = error => reject(error);
+    });
+};
+
 
 // Seçiciler
 const loginForm = document.getElementById('loginForm');
@@ -159,7 +189,7 @@ if (registerForm) {
             // Resim yoksa default ataması yapalım
             let finalPhotoURL = 'img/default-avatar-icon.jpg';
             if (profileFile) {
-                finalPhotoURL = await toBase64(profileFile);
+                finalPhotoURL = await compressImage(profileFile);
             }
 
             // Firestore'a kaydedilecek kullanıcı verisi

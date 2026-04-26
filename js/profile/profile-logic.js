@@ -131,31 +131,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 // Resmi küçültüp Base64'e çevir
-                const base64Image = await toBase64(file);
+                const compressedBase64 = await compressImage(file);
 
                 // Arayüzü anlık güncelle
-                if (avatarPreview) avatarPreview.src = base64Image;
+                if (avatarPreview) avatarPreview.src =compressedBase64;
 
                 // Firestore'daki kullanıcı dökümanını güncelle
                 const userRef = doc(db, "users", user.uid);
                 await updateDoc(userRef, {
-                    photoURL: base64Image
+                    photoURL:compressedBase64
                 });
 
                 // Firebase Auth üzerindeki profili güncelle
                 await updateProfile(user, {
-                    photoURL: base64Image
+                    photoURL:compressedBase64
                 });
 
                 // Navbar'daki küçük avatarı da güncelle
                 const headerAvatar = document.getElementById('headerAvatar');
-                if (headerAvatar) headerAvatar.src = base64Image;
+                if (headerAvatar) headerAvatar.src =compressedBase64;
 
                 alert("Profil fotoğrafı başarıyla güncellendi!");
 
             } catch (error) {
-                console.error("Fotoğraf güncelleme hatası:", error);
-                alert("Hata: Fotoğraf güncellenirken bir sorun oluştu.");
+                console.error("Fotoğraf boyutu çok büyük veya hata oluştu:", error);
+                alert("Hata: FotoğHata: Fotoğraf boyutu limitleri aşıyor, lütfen daha küçük bir görsel deneyin.");
             }
         });
     }
@@ -252,3 +252,41 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+// Resmi küçültüp boyutu optimize eden fonksiyon
+const compressImage = (file, maxWidth = 200, maxHeight = 200) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                // Oranları koruyarak boyutlandır
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height *= maxWidth / width;
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width *= maxHeight / height;
+                        height = maxHeight;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // 0.7 kalitesinde JPEG olarak çıktı al (Boyutu inanılmaz düşürür)
+                resolve(canvas.toDataURL('image/jpeg', 0.7));
+            };
+        };
+        reader.onerror = error => reject(error);
+    });
+};
